@@ -4,8 +4,10 @@ from streamlit_folium import st_folium
 
 from lib.data import filter_by_area, filter_by_date, latest_image_date, load_detections
 from lib.map import build_map
+from lib.style import inject_glass_style
 
 st.set_page_config(page_title="Peta utama - SAR ALKI II", page_icon=":material/map:", layout="wide")
+inject_glass_style()
 
 DATA_PATH = "data/dummy_detections.csv"
 
@@ -18,7 +20,7 @@ if st.session_state.extra_detections:
 
 st.title("Dashboard monitoring maritim - ALKI II", icon=":material/map:")
 
-with st.container(horizontal=True):
+with st.container(horizontal=True, key="status_bar"):
     st.badge(f"Citra terbaru: {latest_image_date(df)}", icon=":material/satellite_alt:", color="blue")
     st.caption("near real-time, bukan streaming langsung")
 

@@ -4,6 +4,7 @@ from folium.plugins import HeatMap, MarkerCluster
 
 DEFAULT_CENTER = [-2.5, 118.0]
 DEFAULT_ZOOM = 7
+DEFAULT_TILES = "OpenStreetMap"
 
 
 def _popup_html(row: pd.Series) -> str:
@@ -23,8 +24,8 @@ def _add_markers(fmap_or_group, df: pd.DataFrame) -> None:
         ).add_to(fmap_or_group)
 
 
-def build_map(df: pd.DataFrame, mode: str) -> folium.Map:
-    fmap = folium.Map(location=DEFAULT_CENTER, zoom_start=DEFAULT_ZOOM)
+def build_map(df: pd.DataFrame, mode: str, tiles: str = DEFAULT_TILES) -> folium.Map:
+    fmap = folium.Map(location=DEFAULT_CENTER, zoom_start=DEFAULT_ZOOM, tiles=tiles)
 
     if mode == "marker":
         _add_markers(fmap, df)

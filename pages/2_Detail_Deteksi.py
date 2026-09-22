@@ -2,8 +2,10 @@ import pandas as pd
 import streamlit as st
 
 from lib.data import aggregate_by_period, load_detections
+from lib.style import inject_glass_style
 
 st.set_page_config(page_title="Detail deteksi - SAR ALKI II", page_icon=":material/table_chart:", layout="wide")
+inject_glass_style()
 st.title("Detail deteksi kapal", icon=":material/table_chart:")
 
 DATA_PATH = "data/dummy_detections.csv"

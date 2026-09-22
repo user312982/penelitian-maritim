@@ -1,8 +1,11 @@
 [theme]
-base = "light"
+showWidgetBorder = true
+showSidebarBorder = true
+
+[theme.light]
 primaryColor = "#0B5394"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f0f5fa"
+backgroundColor = "#f4f7fa"
+secondaryBackgroundColor = "#ffffff"
 textColor = "#1c2b36"
 borderColor = "#d3dfe8"
 linkColor = "#0B5394"
@@ -11,9 +14,24 @@ orangeColor = "#bf8700"
 redColor = "#cf222e"
 blueColor = "#0B5394"
 chartCategoricalColors = ["#0B5394", "#1a7f37", "#bf8700", "#8250df", "#cf222e", "#57606a"]
-baseRadius = "8px"
-showWidgetBorder = true
-showSidebarBorder = true
+baseRadius = "12px"
 
-[theme.sidebar]
-backgroundColor = "#f0f5fa"
+[theme.dark]
+primaryColor = "#4A9DE0"
+backgroundColor = "#0f1720"
+secondaryBackgroundColor = "#182531"
+textColor = "#e6edf3"
+borderColor = "#2a3a48"
+linkColor = "#4A9DE0"
+greenColor = "#3fb950"
+orangeColor = "#d29922"
+redColor = "#f85149"
+blueColor = "#4A9DE0"
+chartCategoricalColors = ["#4A9DE0", "#3fb950", "#d29922", "#a371f7", "#f85149", "#8b949e"]
+baseRadius = "12px"
+
+[theme.light.sidebar]
+backgroundColor = "#eef3f8"
+
+[theme.dark.sidebar]
+backgroundColor = "#101b26"
