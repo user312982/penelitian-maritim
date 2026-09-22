@@ -3,9 +3,24 @@ import pytest
 from folium.plugins import HeatMap, MarkerCluster
 
 from lib.data import load_detections
-from lib.map import build_map
+from lib.map import build_map, carto_tiles
 
 CSV_PATH = "data/dummy_detections.csv"
+
+
+def test_carto_tiles_without_key_falls_back_to_osm():
+    tiles, attr = carto_tiles("light", None)
+    assert tiles == "OpenStreetMap"
+    assert attr is None
+
+
+def test_carto_tiles_with_key_picks_style_by_theme():
+    light_tiles, light_attr = carto_tiles("light", "mykey")
+    dark_tiles, dark_attr = carto_tiles("dark", "mykey")
+    assert "light_all" in light_tiles
+    assert "dark_all" in dark_tiles
+    assert "api_key=mykey" in light_tiles
+    assert light_attr and dark_attr
 
 
 @pytest.fixture

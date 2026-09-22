@@ -6,6 +6,17 @@ DEFAULT_CENTER = [-2.5, 118.0]
 DEFAULT_ZOOM = 7
 DEFAULT_TILES = "OpenStreetMap"
 
+CARTO_ATTR = "&copy; <a href='https://carto.com/attributions'>CARTO</a>"
+
+
+def carto_tiles(theme_type: str, api_key: str | None) -> tuple[str, str | None]:
+    """Basemap URL for CartoDB (needs an API key), falling back to OpenStreetMap."""
+    if not api_key:
+        return DEFAULT_TILES, None
+    style = "dark_all" if theme_type == "dark" else "light_all"
+    url = f"https://{{s}}.basemaps.cartocdn.com/{style}/{{z}}/{{x}}/{{y}}{{r}}.png?api_key={api_key}"
+    return url, CARTO_ATTR
+
 
 def _popup_html(row: pd.Series) -> str:
     return (
@@ -24,8 +35,10 @@ def _add_markers(fmap_or_group, df: pd.DataFrame) -> None:
         ).add_to(fmap_or_group)
 
 
-def build_map(df: pd.DataFrame, mode: str, tiles: str = DEFAULT_TILES) -> folium.Map:
-    fmap = folium.Map(location=DEFAULT_CENTER, zoom_start=DEFAULT_ZOOM, tiles=tiles)
+def build_map(
+    df: pd.DataFrame, mode: str, tiles: str = DEFAULT_TILES, attr: str | None = None
+) -> folium.Map:
+    fmap = folium.Map(location=DEFAULT_CENTER, zoom_start=DEFAULT_ZOOM, tiles=tiles, attr=attr)
 
     if mode == "marker":
         _add_markers(fmap, df)
