@@ -3,12 +3,13 @@ import time
 
 import streamlit as st
 
-st.set_page_config(page_title="Unggah Citra - SAR ALKI II", layout="wide")
-st.title("Unggah & Proses Citra SAR")
+st.set_page_config(page_title="Unggah citra - SAR ALKI II", page_icon=":material/upload_file:", layout="wide")
+st.title("Unggah & proses citra SAR", icon=":material/upload_file:")
 
-st.info(
-    "Prototipe TKT 3: tahap inferensi model TA-2 disimulasikan (stub). "
-    "Saat model TA-2 terintegrasi, bagian ini diganti panggilan model asli."
+st.badge(
+    "Prototipe TKT 3: inferensi model TA-2 disimulasikan",
+    icon=":material/science:",
+    color="orange",
 )
 
 if "extra_detections" not in st.session_state:
@@ -18,12 +19,13 @@ if "pending_preview" not in st.session_state:
 
 uploaded = st.file_uploader("Pilih citra SAR", type=["tif", "png", "jpg", "jpeg"])
 
-if uploaded is not None and st.button("Proses citra"):
-    progress = st.progress(0, text="Preprocessing...")
-    time.sleep(0.3)
-    progress.progress(40, text="Inferensi model (stub)...")
-    time.sleep(0.3)
-    progress.progress(100, text="Selesai")
+if uploaded is not None and st.button("Proses citra", icon=":material/play_arrow:", type="primary"):
+    with st.status("Memproses citra...", expanded=True) as status:
+        st.write("Preprocessing...")
+        time.sleep(0.3)
+        st.write("Inferensi model (stub)...")
+        time.sleep(0.3)
+        status.update(label="Selesai", state="complete")
 
     st.session_state.pending_preview = {
         "id": f"KPL-UP{random.randint(100, 999)}",
@@ -35,10 +37,13 @@ if uploaded is not None and st.button("Proses citra"):
     }
 
 if st.session_state.pending_preview:
-    st.subheader("Preview hasil deteksi (sebelum dipublikasikan)")
-    st.json(st.session_state.pending_preview)
+    with st.container(border=True):
+        st.subheader("Preview hasil deteksi", icon=":material/visibility:")
+        st.caption("Belum dipublikasikan ke peta utama")
+        st.json(st.session_state.pending_preview)
 
-    if st.button("Publikasikan ke peta utama"):
-        st.session_state.extra_detections.append(st.session_state.pending_preview)
-        st.session_state.pending_preview = None
-        st.success("Hasil deteksi ditambahkan ke Halaman Peta Utama.")
+        if st.button("Publikasikan ke peta utama", icon=":material/publish:", type="primary"):
+            st.session_state.extra_detections.append(st.session_state.pending_preview)
+            st.session_state.pending_preview = None
+            st.toast("Hasil deteksi ditambahkan ke halaman peta utama.", icon=":material/check_circle:")
+            st.rerun()

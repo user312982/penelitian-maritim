@@ -1,10 +1,11 @@
+import pandas as pd
 import streamlit as st
 from streamlit_folium import st_folium
 
 from lib.data import filter_by_area, filter_by_date, latest_image_date, load_detections
 from lib.map import build_map
 
-st.set_page_config(page_title="Peta Utama - SAR ALKI II", layout="wide")
+st.set_page_config(page_title="Peta utama - SAR ALKI II", page_icon=":material/map:", layout="wide")
 
 DATA_PATH = "data/dummy_detections.csv"
 
@@ -13,22 +14,32 @@ if "extra_detections" not in st.session_state:
 
 df = load_detections(DATA_PATH)
 if st.session_state.extra_detections:
-    import pandas as pd
-
     df = pd.concat([df, pd.DataFrame(st.session_state.extra_detections)], ignore_index=True)
 
-st.title("Dashboard Monitoring Maritim - ALKI II")
-st.caption(f"Citra terbaru: {latest_image_date(df)} · near real-time")
+st.title("Dashboard monitoring maritim - ALKI II", icon=":material/map:")
 
-st.sidebar.header("Filter")
-min_date, max_date = df["waktu_citra"].min(), df["waktu_citra"].max()
-date_range = st.sidebar.date_input(
-    "Rentang tanggal citra", value=(min_date, max_date), min_value=min_date, max_value=max_date
+with st.container(horizontal=True):
+    st.badge(f"Citra terbaru: {latest_image_date(df)}", icon=":material/satellite_alt:", color="blue")
+    st.caption("near real-time, bukan streaming langsung")
+
+with st.sidebar:
+    st.header("Filter", icon=":material/filter_list:")
+    min_date, max_date = df["waktu_citra"].min(), df["waktu_citra"].max()
+    date_range = st.date_input(
+        "Rentang tanggal citra", value=(min_date, max_date), min_value=min_date, max_value=max_date
+    )
+    areas = st.multiselect(
+        "Area sub-segmen", options=sorted(df["area"].unique()), default=sorted(df["area"].unique())
+    )
+
+mode_label = st.segmented_control(
+    "Mode tampilan",
+    ["Marker individual", "Heatmap kepadatan", "Cluster"],
+    default="Marker individual",
 )
-areas = st.sidebar.multiselect("Area sub-segmen", options=sorted(df["area"].unique()), default=sorted(df["area"].unique()))
-
-mode_label = st.radio("Mode tampilan", ["Marker individual", "Heatmap kepadatan", "Cluster"], horizontal=True)
-mode = {"Marker individual": "marker", "Heatmap kepadatan": "heatmap", "Cluster": "cluster"}[mode_label]
+mode = {"Marker individual": "marker", "Heatmap kepadatan": "heatmap", "Cluster": "cluster"}.get(
+    mode_label, "marker"
+)
 
 filtered = df
 if isinstance(date_range, tuple) and len(date_range) == 2:
@@ -36,6 +47,6 @@ if isinstance(date_range, tuple) and len(date_range) == 2:
 if areas:
     filtered = filter_by_area(filtered, areas)
 
-st.write(f"Menampilkan {len(filtered)} deteksi kapal")
+st.caption(f"Menampilkan {len(filtered)} deteksi kapal")
 fmap = build_map(filtered, mode=mode)
 st_folium(fmap, width=None, height=600)
