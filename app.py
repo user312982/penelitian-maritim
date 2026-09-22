@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_folium import st_folium
 
 from lib.data import filter_by_area, filter_by_date, latest_image_date, load_detections
-from lib.map import build_map, carto_tiles
+from lib.map import build_map
 from lib.style import inject_glass_style
 
 st.set_page_config(page_title="Peta utama - SAR ALKI II", page_icon=":material/map:", layout="wide")
@@ -50,6 +50,5 @@ if areas:
     filtered = filter_by_area(filtered, areas)
 
 st.caption(f"Menampilkan {len(filtered)} deteksi kapal")
-tiles, attr = carto_tiles(st.context.theme.type, st.secrets.get("CARTO_API_KEY"))
-fmap = build_map(filtered, mode=mode, tiles=tiles, attr=attr)
+fmap = build_map(filtered, mode=mode)
 st_folium(fmap, width=None, height=600)

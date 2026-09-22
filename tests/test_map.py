@@ -3,24 +3,9 @@ import pytest
 from folium.plugins import HeatMap, MarkerCluster
 
 from lib.data import load_detections
-from lib.map import build_map, carto_tiles
+from lib.map import build_map
 
 CSV_PATH = "data/dummy_detections.csv"
-
-
-def test_carto_tiles_without_key_falls_back_to_osm():
-    tiles, attr = carto_tiles("light", None)
-    assert tiles == "OpenStreetMap"
-    assert attr is None
-
-
-def test_carto_tiles_with_key_picks_style_by_theme():
-    light_tiles, light_attr = carto_tiles("light", "mykey")
-    dark_tiles, dark_attr = carto_tiles("dark", "mykey")
-    assert "light_all" in light_tiles
-    assert "dark_all" in dark_tiles
-    assert "api_key=mykey" in light_tiles
-    assert light_attr and dark_attr
 
 
 @pytest.fixture
@@ -75,3 +60,22 @@ def test_cluster_mode_attaches_cluster_with_all_points(df):
 def test_invalid_mode_raises():
     with pytest.raises(ValueError):
         build_map(load_detections(CSV_PATH), mode="bogus")
+
+
+def test_default_basemap_is_satellite_imagery(df):
+    fmap = build_map(df, mode="marker")
+    tile_layers = [c for c in fmap._children.values() if isinstance(c, folium.TileLayer)]
+    assert any("arcgisonline.com" in layer.tiles for layer in tile_layers)
+
+
+def test_marker_uses_bounding_box_icon(df):
+    fmap = build_map(df, mode="marker")
+    markers = [c for c in fmap._children.values() if isinstance(c, folium.Marker)]
+    icons = [
+        child
+        for m in markers
+        for child in m._children.values()
+        if isinstance(child, folium.DivIcon)
+    ]
+    assert len(icons) == len(df)
+    assert all("border" in icon.options["html"] for icon in icons)
