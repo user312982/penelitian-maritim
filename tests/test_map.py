@@ -23,24 +23,49 @@ def test_build_map_default_center_and_zoom(df):
     assert fmap.options["zoom"] == 7
 
 
-def test_marker_mode_creates_one_marker_per_row(df):
+def test_marker_mode_creates_one_bounding_box_per_row(df):
     fmap = build_map(df, mode="marker")
-    assert _count_children_of_type(fmap, folium.Marker) == len(df)
+    assert _count_children_of_type(fmap, folium.Rectangle) == len(df)
 
 
 def test_marker_popup_contains_expected_fields(df):
     fmap = build_map(df, mode="marker")
-    markers = [c for c in fmap._children.values() if isinstance(c, folium.Marker)]
+    boxes = [c for c in fmap._children.values() if isinstance(c, folium.Rectangle)]
     first_row = df.iloc[0]
     popups = [
         child
-        for m in markers
-        for child in m._children.values()
+        for box in boxes
+        for child in box._children.values()
         if isinstance(child, folium.Popup)
     ]
     popup_htmls = [p.html.render() for p in popups]
     assert any(str(first_row["id"]) in html for html in popup_htmls)
     assert any(str(first_row["confidence"]) in html for html in popup_htmls)
+
+
+def test_bounding_box_size_scales_with_ship_length(df):
+    """Kotak dalam derajat lat/lon (geografis), jadi kapal lebih panjang harus
+    punya bounds lebih lebar - inilah yang membuatnya membesar saat zoom in,
+    beda dari ukuran piksel tetap yang selalu sama di semua level zoom."""
+    fmap = build_map(df, mode="marker")
+    boxes = [c for c in fmap._children.values() if isinstance(c, folium.Rectangle)]
+
+    sorted_df = df.sort_values("length_m")
+    smallest_id, largest_id = sorted_df.iloc[0]["id"], sorted_df.iloc[-1]["id"]
+
+    def box_lat_span(box):
+        (lat1, _), (lat2, _) = box.locations
+        return abs(lat2 - lat1)
+
+    boxes_by_id = {}
+    for box in boxes:
+        for child in box._children.values():
+            if isinstance(child, folium.Popup) and smallest_id in child.html.render():
+                boxes_by_id["small"] = box
+            if isinstance(child, folium.Popup) and largest_id in child.html.render():
+                boxes_by_id["large"] = box
+
+    assert box_lat_span(boxes_by_id["large"]) > box_lat_span(boxes_by_id["small"])
 
 
 def test_heatmap_mode_attaches_heatmap_layer(df):
@@ -68,14 +93,3 @@ def test_default_basemap_is_satellite_imagery(df):
     assert any("arcgisonline.com" in layer.tiles for layer in tile_layers)
 
 
-def test_marker_uses_bounding_box_icon(df):
-    fmap = build_map(df, mode="marker")
-    markers = [c for c in fmap._children.values() if isinstance(c, folium.Marker)]
-    icons = [
-        child
-        for m in markers
-        for child in m._children.values()
-        if isinstance(child, folium.DivIcon)
-    ]
-    assert len(icons) == len(df)
-    assert all("border" in icon.options["html"] for icon in icons)

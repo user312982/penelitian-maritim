@@ -16,7 +16,16 @@ def test_load_detections_reads_all_rows():
     df = load_detections(CSV_PATH)
     raw = pd.read_csv(CSV_PATH)
     assert len(df) == len(raw)
-    assert set(df.columns) == {"id", "lat", "lon", "waktu_citra", "confidence", "area"}
+    assert set(df.columns) == {
+        "id",
+        "lat",
+        "lon",
+        "waktu_citra",
+        "confidence",
+        "area",
+        "length_m",
+        "width_m",
+    }
 
 
 def test_filter_by_date_narrows_range():

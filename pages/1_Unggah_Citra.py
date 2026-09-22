@@ -27,6 +27,7 @@ if uploaded is not None and st.button("Proses citra", icon=":material/play_arrow
         time.sleep(0.3)
         status.update(label="Selesai", state="complete")
 
+    length_m = round(random.uniform(20, 250), 1)
     st.session_state.pending_preview = {
         "id": f"KPL-UP{random.randint(100, 999)}",
         "lat": round(-2.5 + random.uniform(-0.5, 0.5), 4),
@@ -34,6 +35,8 @@ if uploaded is not None and st.button("Proses citra", icon=":material/play_arrow
         "waktu_citra": time.strftime("%Y-%m-%d"),
         "confidence": round(random.uniform(0.6, 0.95), 2),
         "area": "Makassar-Tengah",
+        "length_m": length_m,
+        "width_m": round(length_m * random.uniform(0.12, 0.18), 1),
     }
 
 if st.session_state.pending_preview:
