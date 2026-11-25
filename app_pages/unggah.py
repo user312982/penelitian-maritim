@@ -3,19 +3,8 @@ import time
 
 import streamlit as st
 
-st.set_page_config(page_title="Unggah citra - SAR ALKI II", page_icon=":material/upload_file:", layout="wide")
-st.title("Unggah & proses citra SAR", icon=":material/upload_file:")
-
-st.badge(
-    "Prototipe TKT 3: inferensi model TA-2 disimulasikan",
-    icon=":material/science:",
-    color="orange",
-)
-
-if "extra_detections" not in st.session_state:
-    st.session_state.extra_detections = []
-if "pending_preview" not in st.session_state:
-    st.session_state.pending_preview = None
+st.title("Unggah citra SAR", icon=":material/upload_file:")
+st.caption("Unggah citra Sentinel-1, proses deteksi kapal, lalu tampilkan hasilnya di peta.")
 
 uploaded = st.file_uploader("Pilih citra SAR", type=["tif", "png", "jpg", "jpeg"])
 
@@ -23,7 +12,7 @@ if uploaded is not None and st.button("Proses citra", icon=":material/play_arrow
     with st.status("Memproses citra...", expanded=True) as status:
         st.write("Preprocessing...")
         time.sleep(0.3)
-        st.write("Inferensi model (stub)...")
+        st.write("Deteksi kapal...")
         time.sleep(0.3)
         status.update(label="Selesai", state="complete")
 
@@ -43,7 +32,12 @@ if st.session_state.pending_preview:
     with st.container(border=True):
         st.subheader("Preview hasil deteksi", icon=":material/visibility:")
         st.caption("Belum dipublikasikan ke peta utama")
-        st.json(st.session_state.pending_preview)
+        p = st.session_state.pending_preview
+        with st.container(horizontal=True):
+            st.metric("ID kapal", p["id"], border=True)
+            st.metric("Koordinat", f"{p['lat']}, {p['lon']}", border=True)
+            st.metric("Ukuran", f"{p['length_m']:.0f} × {p['width_m']:.0f} m", border=True)
+            st.metric("Confidence", f"{p['confidence']:.0%}", border=True)
 
         if st.button("Publikasikan ke peta utama", icon=":material/publish:", type="primary"):
             st.session_state.extra_detections.append(st.session_state.pending_preview)

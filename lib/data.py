@@ -25,3 +25,15 @@ def aggregate_by_period(df: pd.DataFrame) -> pd.DataFrame:
 
 def latest_image_date(df: pd.DataFrame) -> str:
     return df["waktu_citra"].max()
+
+
+DATA_PATH = "data/dummy_detections.csv"
+
+
+def load_all_detections() -> pd.DataFrame:
+    """Data dummy + deteksi yang dipublikasikan dari halaman unggah (session state)."""
+    import streamlit as st
+
+    df = load_detections(DATA_PATH)
+    extra = st.session_state.get("extra_detections")
+    return pd.concat([df, pd.DataFrame(extra)], ignore_index=True) if extra else df

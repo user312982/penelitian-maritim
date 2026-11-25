@@ -1,4 +1,7 @@
 [theme]
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+headingFontWeights = [700, 600, 600, 600, 500, 500]
 showWidgetBorder = true
 showSidebarBorder = true
 
@@ -35,3 +38,6 @@ backgroundColor = "#eef3f8"
 
 [theme.dark.sidebar]
 backgroundColor = "#101b26"
+
+[client]
+toolbarMode = "minimal"

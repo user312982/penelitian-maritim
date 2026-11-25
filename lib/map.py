@@ -58,6 +58,10 @@ def _add_bounding_boxes(fmap: folium.Map, df: pd.DataFrame) -> None:
             popup=folium.Popup(_popup_html(row)),
             tooltip=f"{row['id']} · {row['confidence']:.2f}",
         ).add_to(fmap)
+        # titik pusat agar kapal tetap terlihat saat zoom jauh (box skala nyata terlalu kecil)
+        folium.CircleMarker(
+            [row["lat"], row["lon"]], radius=3, color="#ef4444", fill=True, fill_opacity=1, weight=1
+        ).add_to(fmap)
 
 
 def _add_point_markers(fmap_or_group, df: pd.DataFrame) -> None:
@@ -88,4 +92,6 @@ def build_map(
     else:
         raise ValueError(f"Unknown map mode: {mode}")
 
+    if not df.empty:
+        fmap.fit_bounds([[df["lat"].min(), df["lon"].min()], [df["lat"].max(), df["lon"].max()]])
     return fmap

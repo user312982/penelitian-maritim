@@ -2,7 +2,7 @@
 
 ## Overview
 
-Bangun prototipe dashboard Streamlit + Folium sesuai [SPEC.md](../SPEC.md), dimulai dari data dummy, lalu logika data (`lib/data.py`), logika peta (`lib/map.py`), baru 4 halaman Streamlit. Tiap layer di-test sebelum halaman UI dibangun di atasnya.
+Bangun prototipe dashboard Streamlit + Folium sesuai [SPEC.md](SPEC.md), dimulai dari data dummy, lalu logika data (`lib/data.py`), logika peta (`lib/map.py`), baru 4 halaman Streamlit. Tiap layer di-test sebelum halaman UI dibangun di atasnya.
 
 ## Architecture Decisions
 
