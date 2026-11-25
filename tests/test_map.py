@@ -91,5 +91,3 @@ def test_default_basemap_is_satellite_imagery(df):
     fmap = build_map(df, mode="marker")
     tile_layers = [c for c in fmap._children.values() if isinstance(c, folium.TileLayer)]
     assert any("arcgisonline.com" in layer.tiles for layer in tile_layers)
-
-

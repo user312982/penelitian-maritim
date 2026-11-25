@@ -1,5 +1,4 @@
 import pandas as pd
-import pytest
 
 from lib.data import (
     aggregate_by_period,
